@@ -24,9 +24,11 @@ void com_read_data(int* ientropy_buf_cnt, unsigned char* buf_write, int* buf_ent
 			buf_entropy[i] = *buf_write / (128 / pow(2, i));
 			a = (128 / pow(2, i));
 			*buf_write = *buf_write % a;
+			//printf("%d", buf_entropy[i]);
 		}
+		//printf("\n");
 		*ientropy_buf_cnt = 0;
-		*buf_entropy = 0;
+		*buf_write = 0;
 	
 }
 void Conversion_entropy(int* buf_cnt,double blockArray,unsigned char* buf_write, int* buf_entropy, FILE* Compression_File)
@@ -1015,25 +1017,29 @@ void Conversion_entropy(int* buf_cnt,double blockArray,unsigned char* buf_write,
 }
 void i_Conversion_entropy(int* ientropy_buf_cnt, double* blockArray, unsigned char* buf_write, int* buf_entropy, FILE* Comp_read_File)
 {
+	
 	*blockArray = 0;
 	int sign = 0;
-	
+	//printf("%d", buf_entropy[*ientropy_buf_cnt]);
+	//printf("  %d/%d  ", buf_entropy[*ientropy_buf_cnt], *ientropy_buf_cnt);
 	if (buf_entropy[*ientropy_buf_cnt] == 0)
 	{
-		
+
 		*ientropy_buf_cnt += 1;
 		if (*ientropy_buf_cnt ==8)
 		{
 			com_read_data(ientropy_buf_cnt, buf_write, buf_entropy, Comp_read_File);
 		}
+
 		if (buf_entropy[*ientropy_buf_cnt] == 0)//category 0
 		{
 			*blockArray = 0;
-			*ientropy_buf_cnt += 1;//마지막이 맞는거 같은디
+			*ientropy_buf_cnt += 1;
 			if (*ientropy_buf_cnt == 8)
 			{
 				com_read_data(ientropy_buf_cnt, buf_write, buf_entropy, Comp_read_File);
 			}
+			
 
 		}
 		else//category 1~2
@@ -1044,6 +1050,7 @@ void i_Conversion_entropy(int* ientropy_buf_cnt, double* blockArray, unsigned ch
 			{
 				com_read_data(ientropy_buf_cnt, buf_write, buf_entropy, Comp_read_File);
 			}
+			
 			if (buf_entropy[*ientropy_buf_cnt] == 0)//category 1
 			{
 
@@ -1073,6 +1080,7 @@ void i_Conversion_entropy(int* ientropy_buf_cnt, double* blockArray, unsigned ch
 				}
 
 				*blockArray = (*blockArray * sign);
+				
 
 			}
 			else//category 2
@@ -1104,33 +1112,33 @@ void i_Conversion_entropy(int* ientropy_buf_cnt, double* blockArray, unsigned ch
 				}
 
 				*blockArray = (*blockArray + buf_entropy[*ientropy_buf_cnt]) * sign;//2~3 정하기
-				
+
 				*ientropy_buf_cnt += 1;
 				if (*ientropy_buf_cnt == 8)
 				{
 					com_read_data(ientropy_buf_cnt, buf_write, buf_entropy, Comp_read_File);
 				}
-
-
+				
 			}
 		}
 
 	}
-	else//3번 category 이상
+	else//3번 category 이상 1~
 	{
+		
 		*ientropy_buf_cnt += 1;
 		if (*ientropy_buf_cnt == 8)
 		{
 			com_read_data(ientropy_buf_cnt, buf_write, buf_entropy, Comp_read_File);
 		}
-		if (buf_entropy[*ientropy_buf_cnt] == 0)//3~4 category
+		if (buf_entropy[*ientropy_buf_cnt] == 0)//3~4 category 10~
 		{
 			*ientropy_buf_cnt += 1;
 			if (*ientropy_buf_cnt == 8)
 			{
 				com_read_data(ientropy_buf_cnt, buf_write, buf_entropy, Comp_read_File);
 			}
-			if (buf_entropy[*ientropy_buf_cnt] == 0)//3
+			if (buf_entropy[*ientropy_buf_cnt] == 0)//3 100
 			{
 				*blockArray = 4;
 				*ientropy_buf_cnt += 1;
@@ -1156,7 +1164,8 @@ void i_Conversion_entropy(int* ientropy_buf_cnt, double* blockArray, unsigned ch
 						com_read_data(ientropy_buf_cnt, buf_write, buf_entropy, Comp_read_File);
 					}
 				}
-				for (int i = 1;i > 0;i--)
+				
+				for (int i = 1;i >= 0;i--)
 				{
 					*blockArray = (*blockArray + buf_entropy[*ientropy_buf_cnt]* pow(2, i)) ;//2~3 정하기
 					*ientropy_buf_cnt += 1;
@@ -1165,8 +1174,10 @@ void i_Conversion_entropy(int* ientropy_buf_cnt, double* blockArray, unsigned ch
 						com_read_data(ientropy_buf_cnt, buf_write, buf_entropy, Comp_read_File);
 					}
 				}
-
+				
 				*blockArray = *blockArray * sign;//부호 곱해주기
+				
+
 			}
 			else//4 101x000
 			{
@@ -1208,10 +1219,11 @@ void i_Conversion_entropy(int* ientropy_buf_cnt, double* blockArray, unsigned ch
 				}
 				
 				*blockArray = *blockArray * sign;
+				
 			}
 
 		}
-	    else//5번 이상
+	    else//5번 이상 11~
 	    {
 		    
 		     *ientropy_buf_cnt += 1;
@@ -1219,7 +1231,7 @@ void i_Conversion_entropy(int* ientropy_buf_cnt, double* blockArray, unsigned ch
 			 {
 				 com_read_data(ientropy_buf_cnt, buf_write, buf_entropy, Comp_read_File);
 			 }
-			 if (buf_entropy[*ientropy_buf_cnt] == 0)//5번
+			 if (buf_entropy[*ientropy_buf_cnt] == 0)//5번 110
 			 {
 				 *blockArray = 16;
 				 *ientropy_buf_cnt += 1;
@@ -1259,15 +1271,16 @@ void i_Conversion_entropy(int* ientropy_buf_cnt, double* blockArray, unsigned ch
 				 }
 
 				 *blockArray = *blockArray * sign;
+				 
 			 }
-			 else
+			 else // 111~
 			 {
 				 *ientropy_buf_cnt += 1;
 				 if (*ientropy_buf_cnt == 8)
 				 {
 					 com_read_data(ientropy_buf_cnt, buf_write, buf_entropy, Comp_read_File);
 				 }
-				 if (buf_entropy[*ientropy_buf_cnt] == 0)//6
+				 if (buf_entropy[*ientropy_buf_cnt] == 0)//6 1110X
 				 {
 					 *blockArray = 32;
 					 *ientropy_buf_cnt += 1;
@@ -1305,15 +1318,16 @@ void i_Conversion_entropy(int* ientropy_buf_cnt, double* blockArray, unsigned ch
 					 }
 
 					 *blockArray = *blockArray * sign;
+					 
 				 }
-				 else
+				 else //1111~
 				 {
 					 *ientropy_buf_cnt += 1;
 					 if (*ientropy_buf_cnt == 8)
 					 {
 						 com_read_data(ientropy_buf_cnt, buf_write, buf_entropy, Comp_read_File);
 					 }
-					 if (buf_entropy[*ientropy_buf_cnt] == 0)//7
+					 if (buf_entropy[*ientropy_buf_cnt] == 0)//7 111110X
 					 {
 						 *blockArray = 64;
 						 *ientropy_buf_cnt += 1;
@@ -1351,6 +1365,7 @@ void i_Conversion_entropy(int* ientropy_buf_cnt, double* blockArray, unsigned ch
 						 }
 
 						 *blockArray = *blockArray * sign;
+						
 					 }
 					 else
 					 {
@@ -1361,6 +1376,7 @@ void i_Conversion_entropy(int* ientropy_buf_cnt, double* blockArray, unsigned ch
 						 }
 						 if (buf_entropy[*ientropy_buf_cnt] == 0)//8
 						 {
+							 
 							 *blockArray = 128;
 							 *ientropy_buf_cnt += 1;
 							 if (*ientropy_buf_cnt == 8)
@@ -1385,18 +1401,21 @@ void i_Conversion_entropy(int* ientropy_buf_cnt, double* blockArray, unsigned ch
 									 com_read_data(ientropy_buf_cnt, buf_write, buf_entropy, Comp_read_File);
 								 }
 							 }
-
+						
 							 for (int j = 6;j >= 0;j--)
 							 {
+								
 								 *blockArray = (*blockArray + buf_entropy[*ientropy_buf_cnt] * pow(2, j));//2~3 정하기
+								 
 								 *ientropy_buf_cnt += 1;
 								 if (*ientropy_buf_cnt == 8)
 								 {
 									 com_read_data(ientropy_buf_cnt, buf_write, buf_entropy, Comp_read_File);
 								 }
 							 }
-
+							 
 							 *blockArray = *blockArray * sign;
+							
 						 }
 						 else
 						 {
@@ -1443,6 +1462,7 @@ void i_Conversion_entropy(int* ientropy_buf_cnt, double* blockArray, unsigned ch
 								 }
 
 								 *blockArray = *blockArray * sign;
+								 
 							 }
 							 else
 							 {
@@ -1488,7 +1508,7 @@ void i_Conversion_entropy(int* ientropy_buf_cnt, double* blockArray, unsigned ch
 											 com_read_data(ientropy_buf_cnt, buf_write, buf_entropy, Comp_read_File);
 										 }
 									 }
-
+									 
 									 *blockArray = *blockArray * sign;
 								 }
 								 else//11
@@ -1500,10 +1520,16 @@ void i_Conversion_entropy(int* ientropy_buf_cnt, double* blockArray, unsigned ch
 									 {
 										 com_read_data(ientropy_buf_cnt, buf_write, buf_entropy, Comp_read_File);
 									 }
+									 
 									 if(buf_entropy[*ientropy_buf_cnt] == 0)
 									 {
+										 
 										 *blockArray = 1024;
 										 *ientropy_buf_cnt += 1;
+										 if (*ientropy_buf_cnt == 8)
+										 {
+											 com_read_data(ientropy_buf_cnt, buf_write, buf_entropy, Comp_read_File);
+										 }
 									       if (buf_entropy[*ientropy_buf_cnt] == 0)
 									       {
 									  	     sign = -1;
@@ -1535,7 +1561,9 @@ void i_Conversion_entropy(int* ientropy_buf_cnt, double* blockArray, unsigned ch
 									       }
 									       
 									       *blockArray = *blockArray * sign;
+										   
 									 }
+									 
 								 }
 							 }
 						 }
@@ -1550,7 +1578,7 @@ void i_Conversion_entropy(int* ientropy_buf_cnt, double* blockArray, unsigned ch
 	
 }
 
-void intra_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigned char* buf_write,int mode_num,int* intra_flag, int* intra_modenum_flag,FILE* Comp_write_File)
+void intra_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigned char* buf_write,int mode_num,int* intra_flag, int* intra_modenum_flag,double* blockArray,int Ac_Flag,int b_width,int b_heigte, FILE* Comp_write_File)
 {
 	
 		buf_entropy[*entropy_buf_cnt] = intra_flag[mode_num - 1];//intra 플래그 넣기
@@ -1568,38 +1596,48 @@ void intra_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigned char* buf_wr
 				write_entropy(entropy_buf_cnt, buf_write, buf_entropy, Comp_write_File);
 			}
 		}
+		
+		Conversion_entropy(entropy_buf_cnt, blockArray[0], buf_write, buf_entropy, Comp_write_File);//dc넣기
+		
+		buf_entropy[*entropy_buf_cnt] = Ac_Flag;//ac플래그 넣기
+		*entropy_buf_cnt += 1;
+		
+		if (*entropy_buf_cnt == 8)
+		{
+			write_entropy(entropy_buf_cnt, buf_write, buf_entropy, Comp_write_File);
+		}
+
+		if (Ac_Flag == 0)//Ac_Flag 0일경우
+		{
+			for (int i = 1;i < b_width * b_heigte;i++)
+			{
+				Conversion_entropy(entropy_buf_cnt, blockArray[i], buf_write, buf_entropy, Comp_write_File);//ac 넣기
+
+			}
+		}
 	
 }
-void inter_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigned char* buf_write,double mv_x, double mv_y,FILE* Comp_write_File)
+void inter_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigned char* buf_write,double mv_x, double mv_y, double* blockArray, int Ac_Flag, int b_width, int b_heigte, FILE* Comp_write_File)
 {
 	Conversion_entropy(entropy_buf_cnt, mv_x, buf_write, buf_entropy, Comp_write_File);//mvx 넣어주기
 	
 	Conversion_entropy(entropy_buf_cnt, mv_y, buf_write, buf_entropy, Comp_write_File);//mvx넣어주기
-
-}
-void encoder_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigned char* buf_write,double* blockArray, int Ac_Flag, int b_width, int b_heigte, FILE* Comp_write_File)
-{
-	Conversion_entropy(entropy_buf_cnt, blockArray[0], buf_write, buf_entropy, Comp_write_File);//dc넣기
-
-	buf_entropy[*entropy_buf_cnt] = Ac_Flag;//ac플래그 넣기
 	
+	Conversion_entropy(entropy_buf_cnt, blockArray[0], buf_write, buf_entropy, Comp_write_File);//dc넣기
+	
+	buf_entropy[*entropy_buf_cnt] = Ac_Flag;//ac플래그 넣기
 	*entropy_buf_cnt += 1;
-
 	if (*entropy_buf_cnt == 8)
 	{
 		write_entropy(entropy_buf_cnt, buf_write, buf_entropy, Comp_write_File);
 	}
-
-	if (Ac_Flag == 0)//Ac_Flag 0일경우
+	if (Ac_Flag == 0)//Ac_Flag일경우
 	{
 		for (int i = 1;i < b_width * b_heigte;i++)
 		{
-
 			Conversion_entropy(entropy_buf_cnt, blockArray[i], buf_write, buf_entropy, Comp_write_File);//ac 넣기
-
 		}
 	}
-
 }
 void cbcr_intra_inter_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigned char* buf_write, double* blockArray, int Ac_Flag, int b_width, int b_heigte, FILE* Comp_write_File)
 {
@@ -1619,146 +1657,112 @@ void cbcr_intra_inter_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigned c
 		}
 	}
 }
+void decoder_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigned char* buf_read, double* blockArray, int* Ac_Flag, int b_width, int b_heigte, FILE* Comp_read_File,int xx,int yy)
+{
+	//printf("DC 실행 ");
+	//printf(" %d ", *entropy_buf_cnt);
+	i_Conversion_entropy(entropy_buf_cnt, &blockArray[0], buf_read, buf_entropy, Comp_read_File);//dc넣기
 
-void RE_intra_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigned char* buf_read, int mode_num, int* intra_flag, int* intra_modenum_flag, double* blockArray, int* Ac_Flag, int b_width, int b_heigte, FILE* Comp_read_File)
+
+	*Ac_Flag = buf_entropy[*entropy_buf_cnt];//ac플래그 넣기
+	//printf("  ACFLAG 실행   ", *Ac_Flag);
+	*entropy_buf_cnt += 1;
+	if (*entropy_buf_cnt == 8)
+	{
+		com_read_data(entropy_buf_cnt, buf_read, buf_entropy, Comp_read_File);
+	}
+	if (*Ac_Flag == 0)//Ac_Flag일경우
+	{
+		//printf("  AC DLQFUR  ");
+
+		for (int i = 1;i < b_width * b_heigte;i++)
+		{
+			/*if (i == 1&& yy == 1 && xx == 0)
+			{
+				printf("\n count : %d \n", *entropy_buf_cnt);
+				printf("이상부분 :  ");
+				for (int j = 0;j < 8;j++)
+				{
+					printf("%d",buf_entropy[j]);
+				}printf("\n");
+			}*/
+			i_Conversion_entropy(entropy_buf_cnt, &blockArray[i], buf_read, buf_entropy, Comp_read_File);//ac 넣기
+			/*if (i == 1 && yy == 1 && xx == 0)
+			{
+					printf("%lf", blockArray[i]);
+				printf("\n");
+			}*/
+
+		}
+	}
+	else
+	{
+		for (int i = 1;i < b_width * b_heigte;i++)
+		{
+			blockArray[i] = 0;
+		}
+	}
+}
+void RE_intra_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigned char* buf_read, int mode_num, int* intra_flag, int* intra_modenum_flag, FILE* Comp_read_File, int bx, int by)
 {
 
 	intra_flag[mode_num] = buf_entropy[*entropy_buf_cnt];//intra 플래그 받아오기
 	*entropy_buf_cnt += 1;
 	if (*entropy_buf_cnt == 8)
 	{
-		fread(&buf_read, sizeof(unsigned char), 1, Comp_read_File);
-		for (int i = 0; i < 8;i++)//필요
-		{
-			int a;
-			buf_entropy[i] = *buf_read / (128 / pow(2, i));
-			a = (128 / pow(2, i));
-			*buf_read = *buf_read % a;
-
-		}
-		*buf_read = 0;
-		*entropy_buf_cnt = 0;
+		com_read_data(entropy_buf_cnt, buf_read, buf_entropy, Comp_read_File);
 	}
-	printf("%d", intra_flag[mode_num]);
+	/*if (by ==0 && bx == 9)
+    {
+    	printf("\n count : %d \n", *entropy_buf_cnt);
+    	printf("이상부분 :  ");
+    	for (int j = 0;j < 8;j++)
+    	{
+    		printf("%d",buf_entropy[j]);
+    	}printf("\n");
+    }*/
 	if (intra_flag[mode_num] == 1)
 	{
 		
-		intra_modenum_flag[mode_num - 1] = buf_entropy[*entropy_buf_cnt];//intra 플래그 모드 넣기
+		intra_modenum_flag[mode_num ] = buf_entropy[*entropy_buf_cnt];//intra 플래그 모드 받아오기
 		*entropy_buf_cnt += 1;
 		if (*entropy_buf_cnt == 8)
 		{
-			fread(&buf_read, sizeof(unsigned char), 1, Comp_read_File);
-			for (int i = 0; i < 8;i++)//필요
-			{
-				int a;
-				buf_entropy[i] = *buf_read / (128 / pow(2, i));
-				a = (128 / pow(2, i));
-				*buf_read = *buf_read % a;
-
-			}
-			*buf_read = 0;
-			*entropy_buf_cnt = 0;
+			com_read_data(entropy_buf_cnt, buf_read, buf_entropy, Comp_read_File);
 		}
 	}
+	
+		
 
-	i_Conversion_entropy(entropy_buf_cnt, &blockArray[0], buf_read, buf_entropy, Comp_read_File);//dc넣기
-
-	*Ac_Flag = buf_entropy[*entropy_buf_cnt];//ac플래그 넣기
-	*entropy_buf_cnt += 1;
-	if (*entropy_buf_cnt == 8)
-	{
-		fread(&buf_read, sizeof(unsigned char), 1, Comp_read_File);
-		for (int i = 0; i < 8;i++)//필요
-		{
-			int a;
-			buf_entropy[i] = *buf_read / (128 / pow(2, i));
-			a = (128 / pow(2, i));
-			*buf_read = *buf_read % a;
-
-		}
-		*buf_read = 0;
-		*entropy_buf_cnt = 0;
-	}
-	if (Ac_Flag == 0)//Ac_Flag일경우
-	{
-		for (int i = 1;i < b_width * b_heigte;i++)
-		{
-			Conversion_entropy(entropy_buf_cnt, blockArray[i], buf_read, buf_entropy, Comp_read_File);//ac 넣기
-		}
-	}
-	else
-	{
-		for (int i = 1;i < b_width * b_heigte;i++)
-		{
-			blockArray[i] = 0;
-		}
-	}
 
 }
-void RE_inter_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigned char* buf_read, double* mv_x, double* mv_y, double* blockArray, int* Ac_Flag, int b_width, int b_heigte, FILE* Comp_read_File)
+void RE_inter_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigned char* buf_read, double* mv_x, double* mv_y,FILE* Comp_read_File)
 {
+	//printf("여기 mvx");
 	i_Conversion_entropy(entropy_buf_cnt, mv_x, buf_read, buf_entropy, Comp_read_File);//mv x
-
+	//printf("여기 mvy");
 	i_Conversion_entropy(entropy_buf_cnt, mv_y, buf_read, buf_entropy, Comp_read_File);//mv y
-	i_Conversion_entropy(entropy_buf_cnt, &blockArray[0], buf_read, buf_entropy, Comp_read_File);//dc
-	*Ac_Flag = buf_entropy[*entropy_buf_cnt];//ac플래그 넣기
-	*entropy_buf_cnt += 1;
-	if (*entropy_buf_cnt == 8)
-	{
-		fread(&buf_read, sizeof(unsigned char), 1, Comp_read_File);
-		for (int i = 0; i < 8;i++)//필요
-		{
-			int a;
-			buf_entropy[i] = *buf_read / (128 / pow(2, i));
-			a = (128 / pow(2, i));
-			*buf_read = *buf_read % a;
-
-		}
-		*buf_read = 0;
-		*entropy_buf_cnt = 0;
-	}
-	if (Ac_Flag == 0)//Ac_Flag일경우
-	{
-		for (int i = 1;i < b_width * b_heigte;i++)
-		{
-			Conversion_entropy(entropy_buf_cnt, blockArray[i], buf_read, buf_entropy, Comp_read_File);//ac 넣기
-		}
-	}
-	else
-	{
-		for (int i = 1;i < b_width * b_heigte;i++)
-		{
-			blockArray[i] = 0;
-		}
-	}
+	//printf("여기 inter dc");
 
 }
 
 void RE_cbcr_intra_inter_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigned char* buf_read, double* blockArray, int* Ac_Flag, int b_width, int b_heigte, FILE* Comp_read_File)
 {
+	//printf("여기 cbcbr dc");
 	i_Conversion_entropy(entropy_buf_cnt, &blockArray[0], buf_read, buf_entropy, Comp_read_File);//dc
-
+	
 	*Ac_Flag = buf_entropy[*entropy_buf_cnt];//ac플래그 넣기
 	*entropy_buf_cnt += 1;
 	if (*entropy_buf_cnt == 8)
 	{
-		fread(&buf_read, sizeof(unsigned char), 1, Comp_read_File);
-		for (int i = 0; i < 8;i++)//필요
-		{
-			int a;
-			buf_entropy[i] = *buf_read / (128 / pow(2, i));
-			a = (128 / pow(2, i));
-			*buf_read = *buf_read % a;
-
-		}
-		*buf_read = 0;
-		*entropy_buf_cnt = 0;
+		com_read_data(entropy_buf_cnt, buf_read, buf_entropy, Comp_read_File);
 	}
-	if (Ac_Flag == 0)//Ac_Flag일경우
+	if (*Ac_Flag == 0)//Ac_Flag일경우
 	{
 		for (int i = 1;i < b_width * b_heigte;i++)
 		{
-			Conversion_entropy(entropy_buf_cnt, blockArray[i], buf_read, buf_entropy, Comp_read_File);//ac 넣기
+			//printf("여기 cbcbr ac");
+			i_Conversion_entropy(entropy_buf_cnt, &blockArray[i], buf_read, buf_entropy, Comp_read_File);//ac 넣기
 		}
 	}
 	else
@@ -1768,6 +1772,7 @@ void RE_cbcr_intra_inter_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigne
 			blockArray[i] = 0;
 		}
 	}
+	
 }
 int ddmain()
 {

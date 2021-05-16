@@ -1,6 +1,6 @@
 #include "buffer.h"
 
-void stream_header(int DCQP, int ACQP, FILE* Comp_write_File, int intre_period,int intra_prediction, int pixel_dmpcm,int dc_dmpcm)
+void stream_header(int DCQP, int ACQP, FILE* Comp_write_File, int intre_period,int intra_prediction)
 {
 	unsigned char buf_stream[8] = { 0 , };
 	int buf_stream_cnt = 0;
@@ -72,28 +72,29 @@ void stream_header(int DCQP, int ACQP, FILE* Comp_write_File, int intre_period,i
 	fwrite(&QP_AC, sizeof(unsigned char), 1, Comp_write_File);
 	printf("AC AP : %d\n", QP_AC);
 	
-	printf("DC,AC DPCM : %d   %d\n", dc_dmpcm, pixel_dmpcm);
-	for (int i = 3;i >= 0;i--)
-	{
-		int a = pow(2, i);
-		buf_stream[buf_stream_cnt] = pixel_dmpcm / a;//WIDTH
-		pixel_dmpcm = pixel_dmpcm % a;
-		buf_stream_cnt++;
-	}
-	for (int i = 3;i >= 0;i--)
-	{
-		int a = pow(2, i);
-		buf_stream[buf_stream_cnt] = dc_dmpcm / a;//WIDTH
-		dc_dmpcm = dc_dmpcm % a;
-		buf_stream_cnt++;
-	}
+	buf_stream[buf_stream_cnt] = 0;
+	buf_stream_cnt++;
+	buf_stream[buf_stream_cnt] = 1;
+	buf_stream_cnt++;
+	buf_stream[buf_stream_cnt] = 1;
+	buf_stream_cnt++;
+	buf_stream[buf_stream_cnt] = 0;//Pixle DPCM mode 6 저장
+	buf_stream_cnt++;
+	buf_stream[buf_stream_cnt] = 0;
+	buf_stream_cnt++;
+	buf_stream[buf_stream_cnt] = 0;
+	buf_stream_cnt++;
+	buf_stream[buf_stream_cnt] = 0;
+	buf_stream_cnt++;
+	buf_stream[buf_stream_cnt] = 0;//DC DPCM mode 0 저장
+	buf_stream_cnt++;
 	
 	for (int i = 0; i < 8;i++)
 	{
 		stream_write += buf_stream[i] * (128 / pow(2, i));
 	}
 	fwrite(&stream_write, sizeof(unsigned char), 1, Comp_write_File);
-	
+	printf("DC,AC DPCM : %d\n", stream_write);
 	stream_write = 0;
 	buf_stream_cnt = 0;
 	
@@ -103,11 +104,8 @@ void stream_header(int DCQP, int ACQP, FILE* Comp_write_File, int intre_period,i
 	buf_stream_cnt++;
 	buf_stream[buf_stream_cnt] = 0;//mv  perd 0
 	buf_stream_cnt++;
-	printf("period : %d\n", intre_period);
 	for (int i = 5;i >= 0;i--)
 	{
-		
-		
 		int a = pow(2, i);
 		buf_stream[buf_stream_cnt] = intre_period / a;//period
 		intre_period = intre_period % a;
@@ -119,14 +117,12 @@ void stream_header(int DCQP, int ACQP, FILE* Comp_write_File, int intre_period,i
 				stream_write += buf_stream[i] * (128 / pow(2, i));
 			}
 			fwrite(&stream_write, sizeof(unsigned char), 1, Comp_write_File);
-			
+			printf("period : %d\n", stream_write);
 			stream_write = 0;
 			buf_stream_cnt = 0;
 		}
-
     }
-
-	buf_stream[buf_stream_cnt] = intra_prediction;//intra prediction
+	buf_stream[buf_stream_cnt] = 1;//intra prediction
 	buf_stream_cnt++;
 	for (int i = 0; i < 6;i++)
 	{
@@ -146,7 +142,7 @@ void stream_header(int DCQP, int ACQP, FILE* Comp_write_File, int intre_period,i
 	}
 }
 
-void read_stream_header(int* DCQP, int* ACQP, FILE* Comp_read_File, int* intre_period, int* intra_prediction)
+void read_stream_header(int* DCQP, int* ACQP, FILE* Comp_read_File, int* intre_period, int* intra_prediction, int* pixel_dmpcm, int* dc_dmpcm)
 {
 	unsigned char buf_stream[8] = { 0 , };
 	int buf_stream_cnt = 0;
@@ -191,10 +187,32 @@ void read_stream_header(int* DCQP, int* ACQP, FILE* Comp_read_File, int* intre_p
 	printf(" ACQP %d ", *ACQP);
 
 	fread(&stream_read, sizeof(unsigned char), 1, Comp_read_File);//PIXEL DPCM 6, DC DPCM 0 
-	printf("  DPCM  %d ", stream_read);
+	for (int i = 0;i < 8;i++)
+	{
+		int a;
+		buf_stream[buf_stream_cnt] = stream_read / (128 / pow(2, i));
+		a = (128 / pow(2, i));
+		stream_read = stream_read % a;
+		buf_stream_cnt++;
+	}
+	buf_stream_cnt = 0;
+	for (int i = 3;i >= 0;i--)//pixel_dmpcm
+	{
+		*pixel_dmpcm += buf_stream[buf_stream_cnt] * pow(2, i);
+		buf_stream_cnt++;
+	}
+	int dcbuf = 0;
+	for (int i = 3;i >= 0;i--)//dc_dmpcm
+	{
+		dcbuf += buf_stream[buf_stream_cnt] * pow(2, i);
+		buf_stream_cnt++;
+	}
+	*dc_dmpcm = dcbuf;
+
+	buf_stream_cnt = 0;
+	printf(" pixel DPCM : %d  dc DPCM : %d ", *pixel_dmpcm, *dc_dmpcm);
 
 	fread(&stream_read, sizeof(unsigned char), 1, Comp_read_File);//3비트는 MV PRED 5비트는  intra preiod
-
 	for (int i = 0;i < 8;i++)
 	{
 		int a;
@@ -215,7 +233,7 @@ void read_stream_header(int* DCQP, int* ACQP, FILE* Comp_read_File, int* intre_p
 	for (int i = 5;i >= 0;i--)//intra preiod
 	{
 
-		*intre_period = buf_stream[buf_stream_cnt] * pow(2, i);//intra prediction
+		*intre_period += buf_stream[buf_stream_cnt] * pow(2, i);//intra prediction
 		buf_stream_cnt++;
 
 		if (buf_stream_cnt == 8)

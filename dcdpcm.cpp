@@ -5,11 +5,7 @@ void dcdpcm(int index, double* buffer_encod,double* blockarrey)
 	double bufdif[3] = { 0, };
 	double temp = 0;
 	
-	if (index == 0)
-	{
-
-	}
-	else
+	if (index != 0)
 	{
 	 
 		if (index < WIDTH)
@@ -79,7 +75,6 @@ void idcdpcm(int index, double* buffer_encod, double* blockarrey)
 	double temp = 0;
 	if (index == 0)
 	{
-
 	}
 	else
 	{

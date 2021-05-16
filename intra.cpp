@@ -236,9 +236,6 @@ void iintra(int modenum, int nIndex, unsigned char* restored_data,double* blockA
 				}
 			}
 		
-		
-
-
 	}
 
 
@@ -253,9 +250,10 @@ void iintra(int modenum, int nIndex, unsigned char* restored_data,double* blockA
 				for (int y = 0; y < 8; y++)
 				{
 					blockArray[y + (8 * x)] += restored_data[nIndex - 1 + (WIDTH * x)];
-
+					
 				}
 			}
+
 		}
 
 		//Æò±Õ°ª
@@ -275,6 +273,7 @@ void iintra(int modenum, int nIndex, unsigned char* restored_data,double* blockA
 
 				}
 			}
+
 		}
 
 
