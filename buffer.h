@@ -32,7 +32,6 @@
 
 #define TN 0
 
-
 double getCval(int y);
 void dct(double* blockArray);
 void idct(double* blockArray);
@@ -41,7 +40,6 @@ void iQuantization(double* blockArray, int DCQP, int ACQP);
 int intra(int nIndex, unsigned char* restored_data, double* blockArray);
 void iintra(int modenum, int nIndex, unsigned char* restored_data, double* blockArray);
 void clipping(double* blockArray);
-void cbcr_clipping(double* blockArray);
 void spiral(int* spiral_x, int* spiral_y);
 void padding(unsigned char* restored_data, unsigned char* buffer_padding);
 void inter(int nIndex, unsigned char* buffer_padding, int* mvx, int* mvy, unsigned char* restored_data, int* spiral_x, int* spiral_y, double* blockArray);
@@ -70,17 +68,21 @@ void Conversion_entropy(int* buf_cnt, double blockArray, unsigned char* buf_writ
 void i_Conversion_entropy(int* ientropy_buf_cnt, double* blockArray, unsigned char* buf_write, int* buf_entropy, FILE* Comp_read_File);
 int AC_FLAG(double* blockArray);
 void RE_AC_FLAG(int AC_Flag, double* blockArray);
-void intra_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigned char* buf_write, int mode_num, int* intra_flag, int* intra_modenum_flag, FILE* Comp_write_File);
-void inter_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigned char* buf_write, double mv_x, double mv_y, FILE* Comp_write_File);
-void encoder_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigned char* buf_write, double* blockArray, int Ac_Flag, int b_width, int b_heigte, FILE* Comp_write_File);
+void intra_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigned char* buf_write, int mode_num, int* intra_flag, int* intra_modenum_flag, double* blockArray, int Ac_Flag, int b_width, int b_heigte, FILE* Comp_write_File);
+void inter_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigned char* buf_write, double mv_x, double mv_y, double* blockArray, int Ac_Flag, int b_width, int b_heigte, FILE* Comp_write_File);
 int CBCR_AC_FLAG(double* blockArray);
 void CBCR_RE_AC_FLAG(int AC_Flag, double* blockArray);
 void cbcr_intra_inter_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigned char* buf_write, double* blockArray, int Ac_Flag, int b_width, int b_heigte, FILE* Comp_write_File);
-void stream_header(int DCQP, int ACQP, FILE* Comp_write_File, int intre_period, int intra_prediction, int pixel_dmpcm,int dc_dmpcm);
+void stream_header(int DCQP, int ACQP, FILE* Comp_write_File, int intre_period, int intra_prediction);
 void write_entropy(int* buf_cnt, unsigned char* buf_write, int* buf_entropy, FILE* Compression_File);
 void com_read_data(int* ientropy_buf_cnt, unsigned char* buf_write, int* buf_entropy, FILE* Comp_read_File);
 
-void read_stream_header(int* DCQP, int* ACQP, FILE* Comp_write_File, int* intre_period, int* intra_prediction);
+void read_stream_header(int* DCQP, int* ACQP, FILE* Comp_write_File, int* intre_period, int* intra_prediction, int* pixel_dmpcm, int* dc_dmpcm);
 void RE_cbcr_intra_inter_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigned char* buf_read, double* blockArray, int* Ac_Flag, int b_width, int b_heigte, FILE* Comp_read_File);
-void RE_inter_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigned char* buf_read, double* mv_x, double* mv_y, double* blockArray, int* Ac_Flag, int b_width, int b_heigte, FILE* Comp_read_File);
-void RE_intra_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigned char* buf_read, int mode_num, int* intra_flag, int* intra_modenum_flag, double* blockArray, int* Ac_Flag, int b_width, int b_heigte, FILE* Comp_read_File);
+void RE_inter_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigned char* buf_read, double* mv_x, double* mv_y, FILE* Comp_read_File);
+void RE_intra_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigned char* buf_read, int mode_num, int* intra_flag, int* intra_modenum_flag, FILE* Comp_read_File, int bx, int by);
+void decoder_entropy(int* entropy_buf_cnt, int* buf_entropy, unsigned char* buf_read, double* blockArray, int* Ac_Flag, int b_width, int b_heigte, FILE* Comp_read_File,int xx, int yy);
+
+void decoder();
+
+void cbcr_clipping(double* blockArray);
