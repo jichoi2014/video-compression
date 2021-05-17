@@ -12,9 +12,9 @@ int main()
 			
 		int dc_dmpcm = 0;
 				
-		int intra_period = 0; // ÇÇ¸®¾îµå°ª!!!!!!!!!!!!!!!!!!
+		int intra_period = 0; // í”¼ë¦¬ì–´ë“œê°’!!!!!!!!!!!!!!!!!!
 					
-		int intra_prediction = 1;//¼³Á¤¿¡ µû¶ó ÀÎÆ®¶ó ¸ğµå ½ÇÇà ³ª´Â ¼³Á¤ ¾ÈÇØÁÜ
+		int intra_prediction = 1;//ì„¤ì •ì— ë”°ë¼ ì¸íŠ¸ë¼ ëª¨ë“œ ì‹¤í–‰ ë‚˜ëŠ” ì„¤ì • ì•ˆí•´ì¤Œ
 
 		double sum_dc_data = 0;
 	
@@ -26,7 +26,7 @@ int main()
 
 						pOriginalFile = fopen("football_cif(352X288)_90f.YUV", "rb");
 						pidctFile = fopen("TESTfootball_cif(352X288)_90f.YUV", "wb");
-						Comp_write_File = fopen("tastfoot11.RAW", "wb");//¸íÄª ´Ù¸£°Ô ½ÇÇà ¿Ö³ÄÇÏ¸é ÆÄÀÏ ÀÚÃ¼ ÀĞ´Â À§Ä¡°¡ ¹Ù²î±â ‹š¹®¿¡//ÀĞ°Å³ª ¾²´Â À§Ä¡ °øÀ¯
+						Comp_write_File = fopen("tastfoot11.RAW", "wb");//ëª…ì¹­ ë‹¤ë¥´ê²Œ ì‹¤í–‰ ì™œëƒí•˜ë©´ íŒŒì¼ ìì²´ ì½ëŠ” ìœ„ì¹˜ê°€ ë°”ë€Œê¸° Â‹Âšë¬¸ì—//ì½ê±°ë‚˜ ì“°ëŠ” ìœ„ì¹˜ ê³µìœ 
 						if (Comp_write_File == NULL)
 						{
 							fputs("File error ", stderr);
@@ -97,7 +97,7 @@ int main()
 						{
 
 							a += bufferspiral_x[i];
-							spiral_x[i] = a;// °ªÀ¸·Î ¹Ş¾Æ¿À±â
+							spiral_x[i] = a;// ê°’ìœ¼ë¡œ ë°›ì•„ì˜¤ê¸°
 							b += bufferspiral_y[i];
 							spiral_y[i] = b;
 
@@ -133,14 +133,14 @@ int main()
 
 							printf("[ %d frame ] Start!!\n", z + 1);
 
-							fread(read_data_origin, sizeof(unsigned char), nFrameSize, pOriginalFile);//ÇÑÇÁ·¹ÀÓ ¹Ş¾Æ¿À±â
+							fread(read_data_origin, sizeof(unsigned char), nFrameSize, pOriginalFile);//í•œí”„ë ˆì„ ë°›ì•„ì˜¤ê¸°
 
 
-							for (int by = 0; by < (HEIGHT / 8);by++)//ºí·°È­+dct
+							for (int by = 0; by < (HEIGHT / 8);by++)//ë¸”ëŸ­í™”+dct
 							{
 								for (int bx = 0; bx < (WIDTH / 8);bx++)
 								{
-									init_fpx_loc[bx + (BLOCK_W_NUM * by)] = (bx * BLOCK_W) + (by * WIDTH * BLOCK_H);//°¢ ºí·ÏÀÇ DC°ª ³Ö¾îÁÖ±â
+									init_fpx_loc[bx + (BLOCK_W_NUM * by)] = (bx * BLOCK_W) + (by * WIDTH * BLOCK_H);//ê° ë¸”ë¡ì˜ DCê°’ ë„£ì–´ì£¼ê¸°
 
 									for (int nY = 0;nY < N;nY++)
 									{
@@ -263,9 +263,9 @@ int main()
 
 									if (z % (intra_period + 1) != 0)
 									{
-										if (by == 0 && bx == 0)//mv flag³Ö¾îÁÖ±â
+										if (by == 0 && bx == 0)//mv flagë„£ì–´ì£¼ê¸°
 										{
-											buf_entropy[entropy_buf_cnt] = mv_flag;//mvÇÃ·¡±× ³Ö±â
+											buf_entropy[entropy_buf_cnt] = mv_flag;//mví”Œë˜ê·¸ ë„£ê¸°
 											entropy_buf_cnt += 1;
 											if (entropy_buf_cnt == 8)
 											{
@@ -379,11 +379,11 @@ int main()
 							fwrite(restored_data, sizeof(unsigned char), nFrameSize, pidctFile);
 
 
-							fread(cb_read_data_origin, sizeof(unsigned char), CBCRnFrameSize, pOriginalFile);//cbcrÇÑÇÁ·¹ÀÓ ¹Ş¾Æ¿À±â
+							fread(cb_read_data_origin, sizeof(unsigned char), CBCRnFrameSize, pOriginalFile);//cbcrí•œí”„ë ˆì„ ë°›ì•„ì˜¤ê¸°
 							Mv_num = 0;
 							iMv_num = 0;
 
-							for (int by = 0; by < (CBCRHEIGHT / CBCRBLOCK_H);by++)//cb ºí·°È­+dct
+							for (int by = 0; by < (CBCRHEIGHT / CBCRBLOCK_H);by++)//cb ë¸”ëŸ­í™”+dct
 							{
 								for (int bx = 0; bx < (CBCRWIDTH / CBCRBLOCK_W);bx++)
 								{
@@ -490,7 +490,7 @@ int main()
 							iMv_num = 0;
 							cbcr_mode_num = 0;
 							icbcr_mode_num = 0;
-							for (int by = 0; by < (CBCRHEIGHT / CBCRBLOCK_H);by++)//cr ºí·°È­+dct
+							for (int by = 0; by < (CBCRHEIGHT / CBCRBLOCK_H);by++)//cr ë¸”ëŸ­í™”+dct
 							{
 								for (int bx = 0; bx < (CBCRWIDTH / CBCRBLOCK_W);bx++)
 								{
