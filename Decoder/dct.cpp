@@ -11,20 +11,20 @@ void dct(double* blockArray)
 {
 	double dct_bk_Array[NR];
 	
-	for (int x = 0; x < N; x++) //xÇà
+	for (int x = 0; x < N; x++) //xí–‰
 	{
-		for (int y = 0; y < N; y++)// y¿­ Ãâ·Â
+		for (int y = 0; y < N; y++)// yì—´ ì¶œë ¥
 		{
 			double dInputSum = 0;
-			for (int j = 0; j < N; j++)// 8°³ÀÇ °ª ¹Þ¾Æ¿Í¼­ °è»êÇÏ±â
+			for (int j = 0; j < N; j++)// 8ê°œì˜ ê°’ ë°›ì•„ì™€ì„œ ê³„ì‚°í•˜ê¸°
 			{
 				dInputSum += blockArray[(j + (N * x))] * (double)cos(((2 * double(j) + 1) * double(y) * M_PIl) / (double(2) * double(N)));
 
 			}
 			if (y == 0)
-				dct_bk_Array[y + (8 * x)] = (sqrt(double(1) / double(N))) * dInputSum;//ÀúÀåÇÏ±â
+				dct_bk_Array[y + (8 * x)] = (sqrt(double(1) / double(N))) * dInputSum;//ì €ìž¥í•˜ê¸°
 			else
-				dct_bk_Array[y + (8 * x)] = (sqrt(double(2) / double(N))) * dInputSum;//ÀúÀåÇÏ±â
+				dct_bk_Array[y + (8 * x)] = (sqrt(double(2) / double(N))) * dInputSum;//ì €ìž¥í•˜ê¸°
 
 		}
 
@@ -42,9 +42,9 @@ void dct(double* blockArray)
 			}
 
 			if (x == 0)
-				blockArray[y + (8 * x)] = (sqrt(double(1) / double(N))) * dInputSum;//ÀúÀåÇÏ±â
+				blockArray[y + (8 * x)] = (sqrt(double(1) / double(N))) * dInputSum;//ì €ìž¥í•˜ê¸°
 			else
-				blockArray[y + (8 * x)] = (sqrt(double(2) / double(N))) * dInputSum;//ÀúÀåÇÏ±â
+				blockArray[y + (8 * x)] = (sqrt(double(2) / double(N))) * dInputSum;//ì €ìž¥í•˜ê¸°
 
 		}
 
@@ -68,23 +68,23 @@ void idct(double* blockArray)
 
 			}
 
-			Idct_bk_Array[y + (8 * x)] = dInputSum;//ÀúÀåÇÏ±â
+			Idct_bk_Array[y + (8 * x)] = dInputSum;//ì €ìž¥í•˜ê¸°
 
 		}
 
 	}
 
-	for (int x = 0; x < N; x++) //xÇà
+	for (int x = 0; x < N; x++) //xí–‰
 	{
-		for (int y = 0; y < N; y++)// y¿­ Ãâ·Â
+		for (int y = 0; y < N; y++)// yì—´ ì¶œë ¥
 		{
 			double dInputSum = 0;
-			for (int j = 0; j < N; j++)// 8°³ÀÇ °ª ¹Þ¾Æ¿Í¼­ °è»êÇÏ±â
+			for (int j = 0; j < N; j++)// 8ê°œì˜ ê°’ ë°›ì•„ì™€ì„œ ê³„ì‚°í•˜ê¸°
 			{
 				dInputSum += Idct_bk_Array[int(j + (N * x))] * getCval(j) * (double)cos(((2 * double(y) + 1) * double(j) * M_PIl) / (double(2) * double(N)));
 
 			}
-			blockArray[y + (8 * x)] = dInputSum;//ÀúÀåÇÏ±â
+			blockArray[y + (8 * x)] = dInputSum;//ì €ìž¥í•˜ê¸°
 
 		}
 
@@ -96,20 +96,20 @@ void CBCR_DCT(double* CBCRblockArray)
 {
 	double dct_bk_Array[CBCRBLOCK_H*CBCRBLOCK_W];
 
-	for (int x = 0; x < CBCRBLOCK_W; x++) //xÇà
+	for (int x = 0; x < CBCRBLOCK_W; x++) //xí–‰
 	{
-		for (int y = 0; y < CBCRBLOCK_H; y++)// y¿­ Ãâ·Â
+		for (int y = 0; y < CBCRBLOCK_H; y++)// yì—´ ì¶œë ¥
 		{
 			double dInputSum = 0;
-			for (int j = 0; j < CBCRBLOCK_W; j++)// 8°³ÀÇ °ª ¹Þ¾Æ¿Í¼­ °è»êÇÏ±â
+			for (int j = 0; j < CBCRBLOCK_W; j++)// 8ê°œì˜ ê°’ ë°›ì•„ì™€ì„œ ê³„ì‚°í•˜ê¸°
 			{
 				dInputSum += CBCRblockArray[(j + (CBCRBLOCK_W * x))] * (double)cos(((2 * double(j) + 1) * double(y) * M_PIl) / (double(2) * double(CBCRBLOCK_W)));
 
 			}
 			if (y == 0)
-				dct_bk_Array[y + (CBCRBLOCK_W * x)] = (sqrt(double(1) / double(CBCRBLOCK_W))) * dInputSum;//ÀúÀåÇÏ±â
+				dct_bk_Array[y + (CBCRBLOCK_W * x)] = (sqrt(double(1) / double(CBCRBLOCK_W))) * dInputSum;//ì €ìž¥í•˜ê¸°
 			else
-				dct_bk_Array[y + (CBCRBLOCK_W * x)] = (sqrt(double(2) / double(CBCRBLOCK_W))) * dInputSum;//ÀúÀåÇÏ±â
+				dct_bk_Array[y + (CBCRBLOCK_W * x)] = (sqrt(double(2) / double(CBCRBLOCK_W))) * dInputSum;//ì €ìž¥í•˜ê¸°
 
 		}
 
@@ -126,9 +126,9 @@ void CBCR_DCT(double* CBCRblockArray)
 			}
 
 			if (x == 0)
-				CBCRblockArray[y + (CBCRBLOCK_W * x)] = (sqrt(double(1) / double(CBCRBLOCK_H))) * dInputSum;//ÀúÀåÇÏ±â
+				CBCRblockArray[y + (CBCRBLOCK_W * x)] = (sqrt(double(1) / double(CBCRBLOCK_H))) * dInputSum;//ì €ìž¥í•˜ê¸°
 			else
-				CBCRblockArray[y + (CBCRBLOCK_W * x)] = (sqrt(double(2) / double(CBCRBLOCK_H))) * dInputSum;//ÀúÀåÇÏ±â
+				CBCRblockArray[y + (CBCRBLOCK_W * x)] = (sqrt(double(2) / double(CBCRBLOCK_H))) * dInputSum;//ì €ìž¥í•˜ê¸°
 
 		}
 
@@ -157,18 +157,18 @@ void CBCR_IDCT(double* CBCRblockArray)
 
 			}
 
-			Idct_bk_Array[y + (CBCRBLOCK_W * x)] = dInputSum;//ÀúÀåÇÏ±â
+			Idct_bk_Array[y + (CBCRBLOCK_W * x)] = dInputSum;//ì €ìž¥í•˜ê¸°
 
 		}
 
 	}
 
-	for (int x = 0; x < CBCRBLOCK_H; x++) //xÇà
+	for (int x = 0; x < CBCRBLOCK_H; x++) //xí–‰
 	{
-		for (int y = 0; y < CBCRBLOCK_W; y++)// y¿­ Ãâ·Â
+		for (int y = 0; y < CBCRBLOCK_W; y++)// yì—´ ì¶œë ¥
 		{
 			double dInputSum = 0;
-			for (int j = 0; j < CBCRBLOCK_W; j++)// 8°³ÀÇ °ª ¹Þ¾Æ¿Í¼­ °è»êÇÏ±â
+			for (int j = 0; j < CBCRBLOCK_W; j++)// 8ê°œì˜ ê°’ ë°›ì•„ì™€ì„œ ê³„ì‚°í•˜ê¸°
 			{
 				if (j == 0)
 				{
@@ -180,7 +180,7 @@ void CBCR_IDCT(double* CBCRblockArray)
 				}
 
 			}
-			CBCRblockArray[y + (CBCRBLOCK_W * x)] = dInputSum;//ÀúÀåÇÏ±â
+			CBCRblockArray[y + (CBCRBLOCK_W * x)] = dInputSum;//ì €ìž¥í•˜ê¸°
 
 		}
 
